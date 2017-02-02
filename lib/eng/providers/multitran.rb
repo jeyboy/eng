@@ -83,9 +83,7 @@ module Eng
             method: :get,
             url: 'http://www.multitran.com/m.exe',
             headers: {
-              params: {
-                  s: urlencode(request)
-              }.merge!(lang_sequence(request)),
+              params: { s: request }.merge(lang_sequence(request)),
               'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
               'DNT' => '1',
               'Host' => 'www.multitran.com'
