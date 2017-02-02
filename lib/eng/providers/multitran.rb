@@ -5,11 +5,6 @@ module Eng
   module Providers
     class Multitran < IProvider
       class << self
-        def proc(sentence)
-          response = RestClient::Request.execute(request_attrs(sentence))
-          prepared_answer(response.body)
-        end
-
       private
         def prepare_suggestions(text)
           response = []
