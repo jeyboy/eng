@@ -6,7 +6,6 @@ module Eng
     class IProvider
         class << self
           def proc(sentence)
-            p request_attrs(sentence)
             response = RestClient::Request.execute(request_attrs(sentence))
             prepared_answer(response.body)
           rescue RestClient::InternalServerError => e

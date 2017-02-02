@@ -24,8 +24,44 @@ module Eng
         end
 
         def prepared_answer(text)
+          translations = []
+          translation = nil
+
           json = JSON::parse(text)
-          i = 0
+          html = json[1][1] rescue nil
+          html = Nokogiri.HTML(html)
+
+          html.css('.tw-bilingual-dictionary').each do |dictionary|
+            word_class = dictionary.css('.tw-bilingual-pos')[0].text
+
+            if eng_types[word_class]
+              word_class = eng_types[word_class]
+            else
+              p "Missed word class: #{word_class}"
+            end
+
+            vocabulary = {}
+
+            dictionary.css('.tw-bilingual-entry').each do |entry|
+              variant = entry.css('span')[0].text
+              possibilities = entry.css('div')[0].text.split(/ ?, ?/)
+
+              possibilities.each do |poss|
+                (vocabulary[poss] ||= []) << variant
+              end
+            end
+
+            vocabulary.each_pair do |word, meanings|
+              translations << {
+                word: word,
+                transcription: nil,
+                word_class: word_class,
+                variants: [{scope: nil, meanings: meanings}]
+              }
+            end
+          end
+
+          [translations.present?, {translations: translations}]
         end
 
         def payload(request)
@@ -34,6 +70,17 @@ module Eng
 
         def lang_sequence(request)
           eng_required?(request) ? 'sl:en,tl:ru' : 'sl:ru,tl:en'
+        end
+
+        def eng_types
+          @eng_types ||= {
+            'іменник' => 'noun',
+            'прикметник' => 'adjective',
+            'числівник' => 'numeral',
+            'займенник' => 'pronoun',
+            'дієслово' => 'verb',
+            'прислівник' => 'adverb'
+          }
         end
       end
     end
