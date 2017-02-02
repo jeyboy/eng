@@ -1,4 +1,7 @@
 require 'eng/version'
+
+require 'eng/providers/audio'
+
 require 'eng/providers/multitran'
 require 'eng/providers/google'
 
@@ -12,7 +15,7 @@ module Eng
     #   @@logger ||= Logger.new(File.join(Rails.root, 'log', 'delayed_job.log'))
     # end
 
-    def proc(request: nil, provider: :multitran)
+    def translation(request: nil, provider: :multitran)
       provider = providers[provider]
 
       status, response = provider && request && request.present? ? provider.proc(request) : [false, nil]
@@ -21,6 +24,10 @@ module Eng
         status: status,
         response: response
       }
+    end
+
+    def audio(request: nil)
+      status, response = request && request.present? ? Providers::Audio::proc(request) : [false, nil]
     end
 
     private

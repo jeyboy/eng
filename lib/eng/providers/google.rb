@@ -4,7 +4,7 @@ module Eng
   module Providers
     class Google < IProvider
       class << self
-        def proc(word)
+        def proc(sentence)
 
         end
       end

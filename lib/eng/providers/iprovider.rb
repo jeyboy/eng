@@ -6,8 +6,8 @@ module Eng
     class IProvider
       protected
         class << self
-          def eng_required?(request)
-            request.gsub(/([\(\) _'\"]|[^[[:alpha:]]])+/, '')[0].try(:ord) < 512
+          def eng_required?(sentence)
+            sentence.gsub(/([\(\) _'\"]|[^[[:alpha:]]])+/, '')[0].try(:ord) < 512
           end
 
           # def urlencode(request)
