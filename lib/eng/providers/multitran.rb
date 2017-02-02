@@ -14,11 +14,7 @@ module Eng
         def prepare_suggestions(text)
           response = []
 
-          /<a[^>]*>(.*?)<\/a>/.match(text) do |match|
-            response << match
-          end
-
-          [false, {suggestions: response}]
+          {suggestions: text.scan(/<a[^>]*>(.*?)<\/a>/).flatten}
         end
 
         def prepare_translations(html)
@@ -63,18 +59,20 @@ module Eng
           end
 
           translations << translation if translation
-          [true, translations]
+          translations
         end
 
         def prepared_answer(text)
           suggest_start_pos = text.index('Suggest:')
-          if suggest_start_pos
+          suggestions = if suggest_start_pos
             end_pos = text.index(/<form|<table/, suggest_start_pos)
             prepare_suggestions(text[suggest_start_pos, end_pos - suggest_start_pos])
-          else
-            html = Nokogiri.parse(text)
-            prepare_translations(html)
-          end
+          end || {}
+
+          html = Nokogiri.parse(text)
+          translations = prepare_translations(html)
+
+          [translations.present?, {translations: translations}.merge(suggestions)]
         end
 
         def request_attrs(request)

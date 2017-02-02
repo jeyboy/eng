@@ -15,7 +15,7 @@ module Eng
     #   @@logger ||= Logger.new(File.join(Rails.root, 'log', 'delayed_job.log'))
     # end
 
-    def translation(request: nil, provider: :multitran)
+    def translate(request: nil, provider: :multitran)
       provider = providers[provider]
 
       status, response = provider && request && request.present? ? provider.proc(request) : [false, nil]
